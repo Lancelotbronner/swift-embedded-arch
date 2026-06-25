@@ -6,4 +6,3 @@ void halt();
 [[noreturn]] void hang();
 void enable_irq();
 void disable_irq();
-[[noreturn]] void _start_asm();
