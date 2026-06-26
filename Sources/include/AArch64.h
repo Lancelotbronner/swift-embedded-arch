@@ -25,8 +25,82 @@ struct [[gnu::packed, gnu::aligned(8)]] CurrentEL {
 
 struct [[gnu::packed, gnu::aligned(8)]] ESR {
 	union {
-		uint64_t : 25;
-	} iss;
+		uint64_t value : 25;
+		struct [[gnu::packed, gnu::aligned(1)]] {
+			bool Direction : 1;
+			uint64_t : 19;
+			uint64_t COND : 4;
+			bool CV : 1;
+		};
+		struct [[gnu::packed, gnu::aligned(1)]] {
+			uint64_t TI : 2;
+			bool RV : 1;
+			uint64_t : 2;
+			uint64_t RN : 5;
+			uint64_t : 10;
+		} ec1;
+		struct [[gnu::packed, gnu::aligned(1)]] {
+			bool : 1;
+			uint64_t CRm : 4;
+			uint64_t Rt : 5;
+			uint64_t CRn : 4;
+			uint64_t Opc1 : 3;
+			uint64_t Opc2 : 3;
+		} ec2;
+		struct [[gnu::packed, gnu::aligned(1)]] {
+			bool : 1;
+			uint64_t CRm : 4;
+			uint64_t Rt : 5;
+			uint64_t Rt2 : 5;
+			bool : 1;
+			uint64_t Opc1 : 4;
+		} ec3;
+		struct [[gnu::packed, gnu::aligned(1)]] {
+			bool : 1;
+			uint64_t AM : 3;
+			bool Offset : 1;
+			uint64_t Rn : 5;
+			uint64_t : 2;
+			uint8_t imm8;
+		} ec6;
+		struct [[gnu::packed, gnu::aligned(1)]] {
+			uint64_t CRm : 4;
+			bool : 1;
+			uint64_t Rt : 4;
+			uint64_t CRn : 4;
+			uint64_t Op1 : 3;
+			uint64_t Op2 : 3;
+			uint64_t Op0 : 3;
+		} ec20;
+		struct [[gnu::packed, gnu::aligned(1)]] {
+			uint16_t imm16;
+		} ec21;
+		struct [[gnu::packed, gnu::aligned(1)]] {
+			bool : 1;
+			uint64_t CRm : 4;
+			uint64_t Rt : 5;
+			uint64_t CRn : 4;
+			uint64_t Op1 : 3;
+			uint64_t Op2 : 3;
+			uint64_t Op0 : 3;
+		} ec24;
+		struct [[gnu::packed, gnu::aligned(1)]] {
+			uint64_t sizereg : 5;
+			uint64_t srcreg : 5;
+			uint64_t destreg : 5;
+			bool : 1;
+			bool OptionA : 1;
+			bool WrongOption : 1;
+			bool FromEpilogue : 1;
+			uint64_t Options : 4;
+			bool isSETG : 1;
+			bool MemInst : 1;
+		} ec39;
+		struct [[gnu::packed, gnu::aligned(1)]] {
+			bool SYNC : 1;
+			uint64_t FSC : 5;
+		} ec61;
+	} ISS;
 	/// Instruction Length for synchronous exceptions.
 	/// Possible values of this bit are:
 	/// - `0b0`: 16-bit instruction trapped.
