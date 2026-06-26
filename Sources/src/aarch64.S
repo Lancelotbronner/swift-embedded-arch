@@ -26,7 +26,7 @@ disable_irq:
 	ret
 
 .global get_CurrentEL
-get_el:
+get_CurrentEL:
 	mrs x0, CurrentEL
 	ret
 

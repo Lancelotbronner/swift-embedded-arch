@@ -19,7 +19,7 @@ struct [[gnu::packed, gnu::aligned(8)]] CurrentEL {
 	/// When the highest implemented Exception level is EL1, this field resets to '01'.
 	/// When the highest implemented Exception level is EL2, this field resets to '10'.
 	/// Otherwise, this field resets to '11'.
-	uint64_t EL : 2;
+	uint64_t el : 2;
 	uint64_t : 4;
 };
 
