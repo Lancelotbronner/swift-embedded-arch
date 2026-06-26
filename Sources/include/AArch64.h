@@ -3,6 +3,51 @@
 #include <Universal.h>
 
 #if __aarch64__
+/// Architectural Feature Access Control Register
+///
+/// Controls access to trace, SME, Streaming SVE, SVE, and Advanced SIMD and floating-point functionality.
+struct [[gnu::packed, gnu::aligned(8)]] CPACR_EL1 {
+	uint64_t : 16;
+	uint64_t ZEN : 2;
+	uint64_t : 2;
+	uint64_t FPEN : 2;
+	uint64_t : 2;
+	uint64_t SMEN : 2;
+	uint64_t : 2;
+	uint64_t TTA : 1;
+	bool EOPOE : 1;
+	bool TAM : 1;
+	bool TCPAC : 1;
+};
+
+struct [[gnu::packed, gnu::aligned(8)]] CPTR_EL2 {
+	uint64_t : 16;
+	uint64_t ZEN : 2;
+	uint64_t : 2;
+	uint64_t FPEN : 2;
+	uint64_t : 2;
+	uint64_t SMEN : 2;
+	uint64_t : 2;
+	bool TTA : 1;
+	bool EOPOE : 1;
+	bool TAM : 1;
+	bool TCPAC : 1;
+};
+
+struct [[gnu::packed, gnu::aligned(8)]] CPTR_EL3 {
+	uint64_t : 8;
+	bool EZ : 1;
+	bool : 1;
+	bool TFP : 1;
+	bool : 1;
+	bool ESM : 1;
+	uint64_t : 7;
+	bool TTA : 1;
+	uint64_t : 9;
+	bool TAM : 1;
+	bool TCPAC : 1;
+};
+
 struct [[gnu::packed, gnu::aligned(8)]] CurrentEL {
 	uint64_t : 2;
 	/// Current Exception level.
@@ -28,9 +73,13 @@ struct [[gnu::packed, gnu::aligned(8)]] ESR {
 		uint64_t value : 25;
 		struct [[gnu::packed, gnu::aligned(1)]] {
 			bool Direction : 1;
-			uint64_t : 19;
+			uint64_t : 10;
+			uint8_t imm8 : 8;
 			uint64_t COND : 4;
 			bool CV : 1;
+		};
+		struct [[gnu::packed, gnu::aligned(1)]] {
+			uint16_t imm16;
 		};
 		struct [[gnu::packed, gnu::aligned(1)]] {
 			uint64_t TI : 2;
@@ -72,9 +121,6 @@ struct [[gnu::packed, gnu::aligned(8)]] ESR {
 			uint64_t Op2 : 3;
 			uint64_t Op0 : 3;
 		} ec20;
-		struct [[gnu::packed, gnu::aligned(1)]] {
-			uint16_t imm16;
-		} ec21;
 		struct [[gnu::packed, gnu::aligned(1)]] {
 			bool : 1;
 			uint64_t CRm : 4;
@@ -120,16 +166,16 @@ struct [[gnu::packed, gnu::aligned(8)]] ESR {
 	///
 	/// The reset behavior of this field is:
 	/// On a Warm reset, this field resets to an architecturally UNKNOWN value.
-	bool il : 1;
+	bool IL : 1;
 	/// Exception Class. Indicates the reason for the exception that this register holds information about.
 	///
 	/// For each EC value, the table references a subsection that gives information about:
 	/// - The cause of the exception, for example the configuration required to enable the trap.
 	/// - The encoding of the associated ISS.
-	uint64_t ec : 6;
+	uint64_t EC : 6;
 	union {
 		uint64_t : 24;
-	} iss2;
+	} ISS2;
 };
 
 /// Hypervisor Configuration Register
@@ -304,6 +350,10 @@ struct [[gnu::packed, gnu::aligned(8)]] SPSR {
 		__asm__ inline ("wfi");
 }
 
+inline void isb() {
+	__asm__ inline volatile ("isb");
+}
+
 [[noreturn]] inline void isb_eret() {
 	__asm__ inline goto ("isb; eret");
 	__builtin_unreachable();
@@ -319,6 +369,24 @@ inline void zero_cntvoff_el2() {
 
 inline void set_cntvoff_el2(uintptr_t r) {
 	__asm__ inline ("msr cntvoff_el2, %0" :: "r" (r));
+}
+
+inline struct CPACR_EL1 get_cpacr_el1() {
+	struct CPACR_EL1 r;
+	__asm__ inline ("mrs %0, cpacr_el1" : "=r" (r));
+	return r;
+}
+
+inline void set_cpacr_el1(struct CPACR_EL1 r) {
+	__asm__ inline ("msr cpacr_el1, %0" :: "r" (r));
+}
+
+inline void set_cptr_el2(struct CPTR_EL2 r) {
+	__asm__ inline ("msr cptr_el2, %0" :: "r" (r));
+}
+
+inline void set_cptr_el3(struct CPTR_EL3 r) {
+	__asm__ inline ("msr cptr_el3, %0" :: "r" (r));
 }
 
 inline struct CurrentEL get_CurrentEL() {
