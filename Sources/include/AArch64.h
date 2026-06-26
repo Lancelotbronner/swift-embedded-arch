@@ -190,18 +190,71 @@ struct [[gnu::packed, gnu::aligned(8)]] SPSR {
 	bool uinj : 1;
 };
 
-void eret();
-void brk0();
+[[noreturn]] inline void hang() {
+	while (true)
+		__asm__ inline ("wfi");
+}
 
-void zero_cntvoff_el2();
-struct CurrentEL get_CurrentEL();
-struct HCR get_hcr_el2();
-void set_hcr_el2(struct HCR);
-void set_elr_el2(addr_t);
-void set_elr_el3(addr_t);
-struct MIPDR get_mpidr_el1();
-void set_scr_el3(struct SCR_EL3);
-void set_sp(uintptr_t);
-void set_spsr_el2(struct SPSR);
-void set_spsr_el3(struct SPSR);
+[[noreturn]] inline void isb_eret() {
+	__asm__ inline goto ("isb; eret");
+	__builtin_unreachable();
+}
+
+inline void brk0() {
+	__asm__ inline ("brk #0");
+}
+
+inline void zero_cntvoff_el2() {
+	__asm__ inline ("msr cntvoff_el2, xzr");
+}
+
+inline void set_cntvoff_el2(uintptr_t r) {
+	__asm__ inline ("msr cntvoff_el2, %0" :: "r" (r));
+}
+
+inline struct CurrentEL get_CurrentEL() {
+	struct CurrentEL r;
+	__asm__ inline ("mrs %0, currentel" : "=r" (r));
+	return r;
+}
+
+inline struct HCR get_hcr_el2() {
+	struct HCR r;
+	__asm__ inline ("mrs %0, hcr_el2" : "=r" (r));
+	return r;
+}
+
+inline void set_hcr_el2(struct HCR r) {
+	__asm__ inline ("msr hcr_el2, %0" :: "r" (r));
+}
+
+inline void set_elr_el2(addr_t r) {
+	__asm__ inline ("msr elr_el2, %0" :: "r" (r));
+}
+
+inline void set_elr_el3(addr_t r) {
+	__asm__ inline ("msr elr_el3, %0" :: "r" (r));
+}
+
+inline struct MIPDR get_mpidr_el1() {
+	struct MIPDR r;
+	__asm__ inline ("mrs %0, mpidr_el1" : "=r" (r));
+	return r;
+}
+
+inline void set_scr_el3(struct SCR_EL3 r) {
+	__asm__ inline ("msr scr_el3, %0" :: "r" (r));
+}
+
+inline void set_sp(uintptr_t r) {
+	__asm__ inline ("mov sp, %0" :: "r" (r));
+}
+
+inline void set_spsr_el2(struct SPSR r) {
+	__asm__ inline ("msr spsr_el2, %0" :: "r" (r));
+}
+
+inline void set_spsr_el3(struct SPSR r) {
+	__asm__ inline ("msr spsr_el3, %0" :: "r" (r));
+}
 #endif
