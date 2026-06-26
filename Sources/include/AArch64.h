@@ -194,7 +194,7 @@ void eret();
 void brk0();
 
 void zero_cntvoff_el2();
-struct CurrentEL get_el();
+struct CurrentEL get_CurrentEL();
 struct HCR get_hcr_el2();
 void set_hcr_el2(struct HCR);
 void set_elr_el2(addr_t);

@@ -25,7 +25,7 @@ disable_irq:
 	msr daifset, #2
 	ret
 
-.global get_el
+.global get_CurrentEL
 get_el:
 	mrs x0, CurrentEL
 	ret
@@ -87,4 +87,5 @@ set_spsr_el3:
 .global zero_cntvoff_el2
 zero_cntvoff_el2:
 	msr cntvoff_el2, xzr
+	ret
 #endif
