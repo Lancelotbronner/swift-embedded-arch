@@ -40,7 +40,7 @@ get_mpidr_el2:
 	mrs x0, hcr_el2
 	ret
 .global set_hcr_el2
-set_mpidr_el2:
+set_hcr_el2:
 	msr hcr_el2, x0
 	ret
 
@@ -67,6 +67,11 @@ brk0:
 .global set_sp
 set_sp:
 	mov sp, x0
+	ret
+
+.global set_scr_el3
+set_scr_el3:
+	msr scr_el3, x0
 	ret
 
 .global set_spsr_el2
