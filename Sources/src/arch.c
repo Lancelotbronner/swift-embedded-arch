@@ -1,4 +1,3 @@
-#include <Universal.h>
 #include <AArch64.h>
 
 static_assert((sizeof(struct CurrentEL) == 8), "64-bit register");

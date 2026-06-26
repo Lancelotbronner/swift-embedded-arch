@@ -23,6 +23,41 @@ struct [[gnu::packed, gnu::aligned(8)]] CurrentEL {
 	uint64_t : 4;
 };
 
+struct [[gnu::packed, gnu::aligned(64)]] ESR {
+	union {
+		uint64_t : 25;
+	} iss;
+	/// Instruction Length for synchronous exceptions.
+	/// Possible values of this bit are:
+	/// - `0b0`: 16-bit instruction trapped.
+	/// - `0b1`:
+	///   32-bit instruction trapped. This value is also used when the exception is one of the following:
+	///   - An SError exception.
+	///   - An Instruction Abort exception.
+	///   - A PC alignment fault exception.
+	///   - An SP alignment fault exception.
+	///   - A Data Abort exception for which the value of the ISV bit is 0.
+	///   - An Illegal Execution state exception.
+	///   - Any debug exception except for Breakpoint instruction exceptions.
+	///     For Breakpoint instruction exceptions, this bit has its standard meaning:
+	///     - `0b0`: 16-bit T32 BKPT instruction.
+	///     - `0b1`: 32-bit A32 BKPT instruction or A64 BRK instruction.
+	///   - An exception reported using EC value 0b000000.
+	///
+	/// The reset behavior of this field is:
+	/// On a Warm reset, this field resets to an architecturally UNKNOWN value.
+	bool il : 1;
+	/// Exception Class. Indicates the reason for the exception that this register holds information about.
+	///
+	/// For each EC value, the table references a subsection that gives information about:
+	/// - The cause of the exception, for example the configuration required to enable the trap.
+	/// - The encoding of the associated ISS.
+	uint64_t ec : 6;
+	union {
+		uint64_t : 24;
+	} iss2;
+};
+
 /// Hypervisor Configuration Register
 ///
 /// Provides configuration controls for virtualization, including defining whether various operations are trapped to EL2.
