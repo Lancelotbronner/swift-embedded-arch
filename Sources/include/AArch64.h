@@ -23,7 +23,7 @@ struct [[gnu::packed, gnu::aligned(8)]] CurrentEL {
 	uint64_t : 4;
 };
 
-struct [[gnu::packed, gnu::aligned(64)]] ESR {
+struct [[gnu::packed, gnu::aligned(8)]] ESR {
 	union {
 		uint64_t : 25;
 	} iss;
