@@ -9,7 +9,7 @@ let package = Package(
 		.library(name: "EmbeddedArch", targets: ["EmbeddedArch"]),
 	],
 	dependencies: [
-		.package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.1.0"),
+		.package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.5.0"),
 	],
 	targets: [
 		.target(name: "EmbeddedArch"),

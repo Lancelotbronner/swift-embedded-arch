@@ -345,6 +345,10 @@ struct [[gnu::packed, gnu::aligned(8)]] SPSR {
 	bool uinj : 1;
 };
 
+inline void bl(addr_t r) {
+	__asm__ inline volatile ("bl %0" :: "i" (r));
+}
+
 [[noreturn]] inline void hang() {
 	while (true)
 		__asm__ inline ("wfi");
